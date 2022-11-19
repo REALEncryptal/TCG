@@ -8,10 +8,11 @@ function Rokemon.new(DataModule:ModuleScript)
     
 	self.Name = Data.Name
 	self.Type = Data.Type
-	self.PowerType = Data.PowerType
+	self.EnergyType = Data.EnergyType
 	self.Attacks = Data.Attacks
 	self.Health = Data.Health
 	self.Colors = Data.Colors
+	self.ImageId = Data.ImageId
 
 	self.EnergyCards = {}
 	self.IsActive = false
@@ -20,6 +21,8 @@ function Rokemon.new(DataModule:ModuleScript)
 	self.IsInHand = false
 	self.IsKnocked = false
 
+	self.Card = require(script.Parent.CardBuilder).NewRokemon(self)
+
 	return self
 end
 
@@ -27,11 +30,11 @@ function Rokemon:AttatchEnergy(EnergyCard)
 	table.insert(self.EnergyCards, EnergyCard)
 end
 
-function Rokemon:UseAttack(AttackName, EnemyRokemon, EnemyPlayer)
+function Rokemon:UseAttack(AttackName,EnemyPlayer)
 	local AttackInfo = self.Attacks[AttackName]
-	EnemyRokemon:TakeDamage(AttackInfo.Damage)
+	EnemyPlayer.Active:TakeDamage(AttackInfo.Damage)
 
-	AttackInfo.Special(EnemyRokemon,EnemyPlayer)
+	AttackInfo.Special(EnemyPlayer)
 end
 
 function Rokemon:TakeDamage(Damage)
@@ -47,6 +50,18 @@ function Rokemon:Retreat()
 	self.IsActive = false
 	self.IsBench = true
 	self.IsInHand = false
+end
+
+function Rokemon:ToggleFront(IsFront)
+	if IsFront then
+		self.Card.BackgroundTransparency = 0
+		self.Card.UiStroke.Enabled = true
+		self.Card.Cover.Visible = false
+	else
+		self.Card.BackgroundTransparency = 1
+		self.Card.UiStroke.Enabled = false
+		self.Card.Cover.Visible = true
+	end
 end
 
 return Rokemon
